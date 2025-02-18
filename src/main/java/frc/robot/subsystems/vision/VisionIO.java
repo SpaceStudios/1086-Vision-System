@@ -12,4 +12,5 @@ public interface VisionIO {
 
   public abstract VisionResult[] getMeasurements();
   public abstract void update(Pose2d presetPose);
+  public abstract double[] getTagYaw();
 }

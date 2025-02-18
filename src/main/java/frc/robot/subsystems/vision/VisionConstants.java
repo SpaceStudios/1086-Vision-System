@@ -25,8 +25,8 @@ public class VisionConstants {
             "Camera_Module_v1_r"
         };
         public static final Transform3d[] CameraTransforms = new Transform3d[] {
-            new Transform3d(new Translation3d(-Units.inchesToMeters(15), -Units.inchesToMeters(9.5), Units.inchesToMeters(12)), new Rotation3d(Units.degreesToRadians(90),0,Units.degreesToRadians(180))),
-            new Transform3d(new Translation3d(-Units.inchesToMeters(15), Units.inchesToMeters(9.5), Units.inchesToMeters(12)), new Rotation3d(Units.degreesToRadians(90),Units.degreesToRadians(0),Units.degreesToRadians(180)))
+            new Transform3d(new Translation3d(-Units.inchesToMeters(15), -Units.inchesToMeters(9.5), Units.inchesToMeters(12)), new Rotation3d(Units.degreesToRadians(90),0,Units.degreesToRadians(-90))),
+            new Transform3d(new Translation3d(Units.inchesToMeters(15), Units.inchesToMeters(0), Units.inchesToMeters(9)), new Rotation3d(Units.degreesToRadians(0),Units.degreesToRadians(0),Units.degreesToRadians(0)))
         };
         public static final PoseStrategy strategy = PoseStrategy.LOWEST_AMBIGUITY;
         public static final PoseStrategy fallbackStrategy = PoseStrategy.LOWEST_AMBIGUITY;

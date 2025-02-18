@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotConstants;
+import frc.robot.subsystems.vision.VisionConstants.GeneralConstants;
 import frc.robot.subsystems.vision.io.VisionIO_REAL;
 import frc.robot.subsystems.vision.io.VisionIO_SIM;
 import frc.robot.subsystems.vision.util.VisionResult;
@@ -19,6 +20,7 @@ public class Vision extends SubsystemBase {
   /** Creates a new Vision. */
   Pose2d currentPose;
   VisionIO io;
+  VisionResult[] lastResult;
   public Vision() {
     switch (RobotConstants.robotState) {
       case SIM:
@@ -29,6 +31,7 @@ public class Vision extends SubsystemBase {
         break;
     }
     currentPose = new Pose2d();
+    lastResult = new VisionResult[GeneralConstants.CameraIDs.length];
   }
 
   public VisionResult[] getVisionMeasurements() {
@@ -40,6 +43,11 @@ public class Vision extends SubsystemBase {
     io.update(pose);
   }
 
+  public double getTargetYaw(int targetID) {
+    double[] tagYaws = io.getTagYaw();
+    return tagYaws[targetID-1];
+  }
+
   @Override
   public void periodic() {
     update(new Pose2d());
@@ -49,7 +57,11 @@ public class Vision extends SubsystemBase {
       if (measuredPoses[i] != null) {
         Logger.recordOutput("Cameras/Camera #"+(i+1)+" Estimated Pose", measuredPoses[i].getPose2d());
       } else {
-        Logger.recordOutput("Cameras/Camera #"+(i+1)+" Estimated Pose", new Pose2d());
+        if (lastResult[i] != null) {
+          Logger.recordOutput("Cameras/Camera #"+(i+1)+" Estimated Pose", lastResult[i].getPose2d());
+        } else {
+          Logger.recordOutput("Cameras/Camera #"+(i+1)+" Estimated Pose", new Pose2d());
+        }
       }
     }
     if (measuredPoses[0] == null && measuredPoses[0] == measuredPoses[1]) {
@@ -57,5 +69,11 @@ public class Vision extends SubsystemBase {
     } else {
       Logger.recordOutput("Cameras/Deadzones", new Pose2d(new Translation2d(100, 100), new Rotation2d()));
     }
+    for (int i=0; i<measuredPoses.length; i++) {
+      if (measuredPoses[i] == null && lastResult[i] != null) {
+        measuredPoses[i] = lastResult[i];
+      }
+    }
+    lastResult = measuredPoses;
   }
 }

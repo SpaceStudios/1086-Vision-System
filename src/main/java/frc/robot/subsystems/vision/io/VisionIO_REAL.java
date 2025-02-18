@@ -15,7 +15,6 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.Timer;
@@ -27,6 +26,7 @@ import frc.robot.subsystems.vision.util.VisionResult;
 public class VisionIO_REAL implements VisionIO {
     PhotonCamera[] cameras;
     PhotonPoseEstimator[] poseEstimators;
+    double[] targetYaw;
     public VisionIO_REAL() {
         cameras = new PhotonCamera[GeneralConstants.CameraIDs.length];
         poseEstimators = new PhotonPoseEstimator[cameras.length];
@@ -34,6 +34,7 @@ public class VisionIO_REAL implements VisionIO {
             cameras[i] = new PhotonCamera(GeneralConstants.CameraIDs[i]);
             poseEstimators[i] = new PhotonPoseEstimator(AprilTagFieldLayout.loadField(GeneralConstants.field), GeneralConstants.strategy, GeneralConstants.CameraTransforms[i]);
         }
+        targetYaw = new double[22];
     }
 
     @Override
@@ -62,16 +63,18 @@ public class VisionIO_REAL implements VisionIO {
     @Override
     public void update(Pose2d pose) {
         Pose3d[] targetPoses = new Pose3d[22];
-        for (PhotonCamera camera : cameras) {
+        for (int i=0; i<cameras.length; i++) {
+            PhotonCamera camera = cameras[i];
             List<PhotonPipelineResult> results = camera.getAllUnreadResults();
             if (results.size() > 0) {
-                for (int i=0; i<results.size(); i++) {
-                    List<PhotonTrackedTarget> targets = results.get(i).getTargets();
+                for (int f=0; f<results.size(); f++) {
+                    List<PhotonTrackedTarget> targets = results.get(f).getTargets();
                     PhotonTrackedTarget[] trackedTargets = new PhotonTrackedTarget[targets.size()];
                     if (targets.size() > 0) {
                         for (int t=0; t<targets.size(); t++) {
                             Optional<Pose3d> targetPose = AprilTagFieldLayout.loadField(GeneralConstants.field).getTagPose(targets.get(t).getFiducialId());
                             trackedTargets[t] = targets.get(t);
+                            targetYaw[targets.get(t).fiducialId-1] = targets.get(t).yaw;
                             if (targetPose.isPresent()) {
                                 targetPoses[targets.get(t).fiducialId-1] = targetPose.get();
                             }   
@@ -86,6 +89,11 @@ public class VisionIO_REAL implements VisionIO {
             }
         }
         Logger.recordOutput("Target Poses", targetPoses);
+    }
+
+    @Override
+    public double[] getTagYaw() {
+        return targetYaw;
     }
 
 }

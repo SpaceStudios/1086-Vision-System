@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj.Timer;
 public class VisionResult {
     Pose3d pose;
     double timeStamp;
-    List<PhotonTrackedTarget> targets;
 
     public VisionResult(Pose3d pose, double timeStamp) {
         this.pose = pose;

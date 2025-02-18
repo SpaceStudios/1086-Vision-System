@@ -33,6 +33,7 @@ public class VisionIO_SIM implements VisionIO {
     PhotonCameraSim[] simCameras;
     VisionSystemSim visionSim;
     PhotonPoseEstimator[] poseEstimators;
+    double[] targetYaw;
 
     public VisionIO_SIM() {
         SimCameraProperties camProperties = new SimCameraProperties();
@@ -53,6 +54,7 @@ public class VisionIO_SIM implements VisionIO {
             // poseEstimators[i].setMultiTagFallbackStrategy(GeneralConstants.fallbackStrategy);
             visionSim.addCamera(simCameras[i], poseEstimators[i].getRobotToCameraTransform());
         }
+        targetYaw = new double[22];
     }
 
     @Override
@@ -111,4 +113,10 @@ public class VisionIO_SIM implements VisionIO {
         }
         Logger.recordOutput("Target Poses", targetPoses);
 	}
+    
+
+    @Override
+    public double[] getTagYaw() {
+        return targetYaw;
+    }
 }
