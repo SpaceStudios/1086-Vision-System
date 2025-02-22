@@ -14,17 +14,21 @@ import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
+import org.photonvision.targeting.MultiTargetPNPResult;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionConstants.GeneralConstants;
+import frc.robot.subsystems.vision.util.VisionFunctions;
 import frc.robot.subsystems.vision.util.VisionResult;
 
 /** Add your docs here. */
@@ -62,19 +66,24 @@ public class VisionIO_SIM implements VisionIO {
         Logger.recordOutput("Cameras/Measuring", true);
         VisionResult[] visionMeasurements = new VisionResult[simCameras.length];
         for (int i=0; i<simCameras.length; i++) {
-            // List<PhotonPipelineResult> pipelineResult = simCameras[i].getCamera().getAllUnreadResults();
-            // if (pipelineResult.size() > 0) {
-            //     PhotonPipelineResult result = pipelineResult.get(0);
-            //     Optional<EstimatedRobotPose> pose = poseEstimators[i].update(result);
-            //     if (pose.isPresent()) {
-            //         visionMeasurements[i] = pose.get().estimatedPose.toPose2d();
-            //     }
-            // }
-            PhotonPipelineResult pipelineResult = simCameras[i].getCamera().getLatestResult();
-            Optional<EstimatedRobotPose> pose = poseEstimators[i].update(pipelineResult);
-            if (pose.isPresent()) {
-                visionMeasurements[i] = new VisionResult(pose.get().estimatedPose, Timer.getFPGATimestamp());
+            List<PhotonPipelineResult> results = simCameras[i].getCamera().getAllUnreadResults();
+            if (results.size() > 0) {
+                Optional<MultiTargetPNPResult> multiTagResult = results.get(0).multitagResult;
+                if (multiTagResult.isPresent()) {
+                    visionMeasurements[i] = new VisionResult(VisionFunctions.calculateMultiTagResult(multiTagResult.get(), poseEstimators[i].getRobotToCameraTransform()), Timer.getFPGATimestamp());
+                } else {
+                    Optional<EstimatedRobotPose> estimatedPose = poseEstimators[i].update(results.get(0));
+                    if (estimatedPose.isPresent()) {
+                        visionMeasurements[i] = new VisionResult(estimatedPose.get().estimatedPose, results.get(0).getTimestampSeconds());
+                    }
+                }
             }
+            // Below is what we should use a fallback code otherwise use the code above unless it is absolutely necessary to use this code
+            // PhotonPipelineResult pipelineResult = simCameras[i].getCamera().getLatestResult();
+            // Optional<EstimatedRobotPose> pose = poseEstimators[i].update(pipelineResult);
+            // if (pose.isPresent()) {
+            //     visionMeasurements[i] = new VisionResult(pose.get().estimatedPose, pose.get().timestampSeconds);
+            // }
         }
         return visionMeasurements;
     }
