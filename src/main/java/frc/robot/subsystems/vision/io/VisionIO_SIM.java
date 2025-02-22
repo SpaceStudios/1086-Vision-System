@@ -68,14 +68,9 @@ public class VisionIO_SIM implements VisionIO {
         for (int i=0; i<simCameras.length; i++) {
             List<PhotonPipelineResult> results = simCameras[i].getCamera().getAllUnreadResults();
             if (results.size() > 0) {
-                Optional<MultiTargetPNPResult> multiTagResult = results.get(0).multitagResult;
-                if (multiTagResult.isPresent()) {
-                    visionMeasurements[i] = new VisionResult(VisionFunctions.calculateMultiTagResult(multiTagResult.get(), poseEstimators[i].getRobotToCameraTransform()), Timer.getFPGATimestamp());
-                } else {
-                    Optional<EstimatedRobotPose> estimatedPose = poseEstimators[i].update(results.get(0));
-                    if (estimatedPose.isPresent()) {
-                        visionMeasurements[i] = new VisionResult(estimatedPose.get().estimatedPose, results.get(0).getTimestampSeconds());
-                    }
+                Optional<EstimatedRobotPose> estimatedPose = poseEstimators[i].update(results.get(0));
+                if (estimatedPose.isPresent()) {
+                    visionMeasurements[i] = new VisionResult(estimatedPose.get().estimatedPose, results.get(0).getTimestampSeconds());
                 }
             }
             // Below is what we should use a fallback code otherwise use the code above unless it is absolutely necessary to use this code
