@@ -91,7 +91,6 @@ public class VisionIO_SIM implements VisionIO {
         }
        
         Pose3d[] targetPoses = new Pose3d[22];
-        PhotonTrackedTarget[][] cameraTargets = new PhotonTrackedTarget[cameras.length][] ;
         for (PhotonCamera camera : cameras) {
             List<PhotonPipelineResult> results = camera.getAllUnreadResults();
             if (results.size() > 0) {

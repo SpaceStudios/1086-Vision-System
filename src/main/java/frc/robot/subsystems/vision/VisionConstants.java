@@ -9,9 +9,13 @@ import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import edu.wpi.first.apriltag.AprilTagDetector;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 
 /** Add your docs here. */
@@ -31,5 +35,8 @@ public class VisionConstants {
         public static final PoseStrategy strategy = PoseStrategy.LOWEST_AMBIGUITY;
         public static final PoseStrategy fallbackStrategy = PoseStrategy.LOWEST_AMBIGUITY;
         public static final AprilTagFields field = AprilTagFields.kDefaultField;
+
+        public static final Matrix<N3, N1> singleTagStdDevs = VecBuilder.fill(2, 2, 8);
+        public static final Matrix<N3, N1> multiTagStdDevs = VecBuilder.fill(0.1, 0.1, 1);
     }
 }
