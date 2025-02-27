@@ -18,7 +18,6 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionConstants.GeneralConstants;
 import frc.robot.subsystems.vision.util.VisionResult;
 import static frc.robot.subsystems.vision.util.VisionFunctions.getStdDevs;
@@ -37,6 +36,8 @@ public class VisionIO_REAL implements VisionIO {
         }
         targetYaw = new double[22];
     }
+
+    
 
     @Override
     public VisionResult[] getMeasurements() {
@@ -100,4 +101,16 @@ public class VisionIO_REAL implements VisionIO {
         return targetYaw;
     }
 
+
+
+    @Override
+    public PhotonPipelineResult getLatestCameraResult(int cameraIndex) {
+        if (cameraIndex > cameras.length-1) {
+            throw new Error("Camera Index is greater than length");
+        }
+        if (cameraIndex < 0) {
+            throw new Error("Camera Index is less than 0");
+        }
+        return cameras[cameraIndex].getLatestResult();
+    }
 }

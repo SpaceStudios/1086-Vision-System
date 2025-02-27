@@ -9,9 +9,10 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.RobotConstants;
 import frc.robot.subsystems.vision.VisionConstants.GeneralConstants;
+import frc.robot.subsystems.vision.io.VisionIO;
 import frc.robot.subsystems.vision.io.VisionIO_REAL;
 import frc.robot.subsystems.vision.io.VisionIO_SIM;
 import frc.robot.subsystems.vision.util.VisionResult;
@@ -22,13 +23,10 @@ public class Vision extends SubsystemBase {
   VisionIO io;
   VisionResult[] lastResult;
   public Vision() {
-    switch (RobotConstants.robotState) {
-      case SIM:
-        io = new VisionIO_SIM();
-        break;
-      case REAL:
-        io = new VisionIO_REAL();
-        break;
+    if (RobotBase.isReal()) {
+      io = new VisionIO_REAL();
+    } else {
+      io = new VisionIO_SIM();
     }
     currentPose = new Pose2d();
     lastResult = new VisionResult[GeneralConstants.CameraIDs.length];

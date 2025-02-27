@@ -13,24 +13,17 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
-import static frc.robot.Constants.RobotConstants.robotState;
-import frc.robot.Constants.RobotConstants.state;
-
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
 
   private final RobotContainer m_robotContainer;
 
   public Robot() {
-    robotState = isReal() ? state.REAL : state.SIM;
-    switch (robotState) {
-      case REAL:
-        Logger.addDataReceiver(new WPILOGWriter());
-        Logger.addDataReceiver(new NT4Publisher());
-        break;
-      case SIM:
-        Logger.addDataReceiver(new NT4Publisher());
-        break;
+    if (isReal()) {
+      Logger.addDataReceiver(new WPILOGWriter());
+      Logger.addDataReceiver(new NT4Publisher());
+    } else {
+      Logger.addDataReceiver(new NT4Publisher());
     }
     Logger.start();
     m_robotContainer = new RobotContainer();
