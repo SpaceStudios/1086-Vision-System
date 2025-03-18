@@ -4,11 +4,6 @@
 
 package frc.robot.subsystems.vision.util;
 
-import java.util.List;
-
-import org.photonvision.PhotonTargetSortMode;
-import org.photonvision.targeting.PhotonTrackedTarget;
-
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;

@@ -36,29 +36,29 @@ public class VisionFunctions {
         Matrix<N3, N1> estStdDevs = singleTagStdDevs;
         List<PhotonTrackedTarget> targets = camera.getLatestResult().targets;
         int numTags = 0;
-        double avgDist = 0;
+        double dist = 0;
         for (PhotonTrackedTarget target : targets) {
             Optional<Pose3d> tagPose = poseEstimator.getFieldTags().getTagPose(target.fiducialId);
             if (tagPose.isEmpty()) {
                 continue;
             }
             numTags++;
-            avgDist += tagPose.get().toPose2d().getTranslation().getDistance(estimatedPose.getTranslation());
+            dist += tagPose.get().toPose2d().getTranslation().getDistance(estimatedPose.getTranslation());
         }
 
         if (numTags == 0) {
             return estStdDevs;
         }
 
-        avgDist /= numTags;
+        dist /= numTags;
         if (numTags > 1) {
             estStdDevs = multiTagStdDevs;
         }
 
-        if (numTags == 1 && avgDist > 4) {
+        if (numTags == 1 && dist > 4) {
             estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
         } else {
-            estStdDevs = estStdDevs.times(1 + ((avgDist*avgDist)/30));
+            estStdDevs = estStdDevs.times(1 + ((dist*dist)/30));
         }
         
         return estStdDevs;
